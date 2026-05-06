@@ -2,9 +2,7 @@ package git_commands
 
 import (
 	ioFs "io/fs"
-	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -97,14 +95,7 @@ func GetRepoPathsForDir(
 		if i == 3 {
 			continue // isBareRepo
 		}
-
-		// from win path to wsl
-		pathCmd := exec.Command("wslpath", "-u", gitDirResults[i])
-		wslPathBytes, pathErr := pathCmd.Output()
-		if pathErr != nil {
-			log.Fatal("Path conversion went bang")
-		}
-		gitDirResults[i] = string(wslPathBytes[:len(wslPathBytes)-1])
+		gitDirResults[i] = oscommands.WinPathToWsl(gitDirResults[i])
 	}
 
 	worktreePath := gitDirResults[0]

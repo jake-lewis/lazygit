@@ -2,14 +2,13 @@ package git_commands
 
 import (
 	iofs "io/fs"
-	"os/exec"
-	"log"
 	"path/filepath"
 	"strings"
 	"sync"
 
 	"github.com/go-errors/errors"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/samber/lo"
 	"github.com/spf13/afero"
@@ -56,15 +55,7 @@ func (self *WorktreeLoader) GetWorktrees() ([]*models.Worktree, error) {
 
 		if strings.HasPrefix(splitLine, "worktree ") {
 			path := strings.SplitN(splitLine, " ", 2)[1]
-
-			// convert path from win to wsl
-			// from win path to wsl
-			pathCmd := exec.Command("wslpath", "-u", path)
-			wslPathBytes, pathErr := pathCmd.Output()
-			if pathErr != nil {
-				log.Fatal("Path conversion went bang")
-			}
-			path = string(wslPathBytes[:len(wslPathBytes)-1])
+			path = oscommands.WinPathToWsl(worktreePath)
 
 			isMain := path == currentRepoPath
 			isCurrent := path == worktreePath

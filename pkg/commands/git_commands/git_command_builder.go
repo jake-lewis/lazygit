@@ -1,8 +1,6 @@
 package git_commands
 
 import (
-	"log"
-	"os/exec"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
@@ -57,16 +55,8 @@ func (self *GitCommandBuilder) ConfigIf(condition bool, ifTrue string) *GitComma
 
 // the -C arg will make git do a `cd` to the directory before doing anything else
 func (self *GitCommandBuilder) Dir(path string) *GitCommandBuilder {
-	// from wsl to win path
-	pathCmd := exec.Command("wslpath", "-m", path)
-	winPathBytes, pathErr := pathCmd.Output()
-	if pathErr != nil {
-		log.Fatal("Path conversion went bang")
-	}
-	winPath := string(winPathBytes[:len(winPathBytes)-1])
-
 	// repo path comes before the command
-	self.args = append([]string{"-C", winPath}, self.args...)
+	self.args = append([]string{"-C", oscommands.WslPathToWin(path)}, self.args...)
 
 	return self
 }

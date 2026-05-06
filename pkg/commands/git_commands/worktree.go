@@ -1,11 +1,10 @@
 package git_commands
 
 import (
-	"log"
-	"os/exec"
 	"path/filepath"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 )
 
 type WorktreeCommands struct {
@@ -36,14 +35,7 @@ func (self *WorktreeCommands) New(opts NewWorktreeOpts) error {
 		panic("cannot specify branch when detaching")
 	}
 
-	// wsl to win
-	pathCmd := exec.Command("wslpath", "-m", opts.Path)
-	winPathBytes, pathErr := pathCmd.Output()
-	if pathErr != nil {
-		log.Fatal("Path conversion went bang")
-	}
-	winPath := string(winPathBytes[:len(winPathBytes)-1])
-
+	winPath := oscommands.WslPathToWin(opts.Path)
 	cmdArgs := NewGitCmd("worktree").Arg("add").
 		ArgIf(opts.Detach, "--detach").
 		ArgIf(opts.Branch != "", "-b", opts.Branch).
@@ -55,28 +47,14 @@ func (self *WorktreeCommands) New(opts NewWorktreeOpts) error {
 }
 
 func (self *WorktreeCommands) Delete(worktreePath string, force bool) error {
-	// wsl to win
-	pathCmd := exec.Command("wslpath", "-m", worktreePath)
-	winPathBytes, pathErr := pathCmd.Output()
-	if pathErr != nil {
-		log.Fatal("Path conversion went bang")
-	}
-	winPath := string(winPathBytes[:len(winPathBytes)-1])
-
+	winPath := oscommands.WslPathToWin(worktreePath)
 	cmdArgs := NewGitCmd("worktree").Arg("remove").ArgIf(force, "-f").Arg(winPath).ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
 }
 
 func (self *WorktreeCommands) Detach(worktreePath string) error {
-	// wsl to win
-	pathCmd := exec.Command("wslpath", "-m", worktreePath)
-	winPathBytes, pathErr := pathCmd.Output()
-	if pathErr != nil {
-		log.Fatal("Path conversion went bang")
-	}
-	winPath := string(winPathBytes[:len(winPathBytes)-1])
-
+	winPath := oscommands.WslPathToWin(worktreePath)
 	cmdArgs := NewGitCmd("checkout").Arg("--detach").GitDir(filepath.Join(winPath, ".git")).ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
