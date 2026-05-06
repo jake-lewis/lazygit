@@ -10,7 +10,7 @@ import (
 )
 
 type ICmdObjBuilder interface {
-	// NewFromArgs takes a slice of strings like []string{"git", "commit"} and returns a new command object.
+	// NewFromArgs takes a slice of strings like []string{"git.exe", "commit"} and returns a new command object.
 	New(args []string) *CmdObj
 	// NewShell takes a string like `git commit` and returns an executable shell command for it e.g. `sh -c 'git commit'`
 	// shellFunctionsFile is an optional file path that will be sourced before executing the command. Callers should pass

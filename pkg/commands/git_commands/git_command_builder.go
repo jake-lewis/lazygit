@@ -102,7 +102,7 @@ func (self *GitCommandBuilder) GitDirIf(condition bool, path string) *GitCommand
 }
 
 func (self *GitCommandBuilder) ToArgv() []string {
-	return append([]string{"git"}, self.args...)
+	return append([]string{"git.exe"}, self.args...)
 }
 
 func (self *GitCommandBuilder) ToString() string {

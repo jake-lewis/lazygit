@@ -135,55 +135,55 @@ func (self *Shell) UpdateFile(path string, content string) *Shell {
 }
 
 func (self *Shell) NewBranch(name string) *Shell {
-	return self.RunCommand([]string{"git", "checkout", "-b", name})
+	return self.RunCommand([]string{"git.exe", "checkout", "-b", name})
 }
 
 func (self *Shell) NewBranchFrom(name string, from string) *Shell {
-	return self.RunCommand([]string{"git", "checkout", "-b", name, from})
+	return self.RunCommand([]string{"git.exe", "checkout", "-b", name, from})
 }
 
 func (self *Shell) RenameCurrentBranch(newName string) *Shell {
-	return self.RunCommand([]string{"git", "branch", "-m", newName})
+	return self.RunCommand([]string{"git.exe", "branch", "-m", newName})
 }
 
 func (self *Shell) Checkout(name string) *Shell {
-	return self.RunCommand([]string{"git", "checkout", name})
+	return self.RunCommand([]string{"git.exe", "checkout", name})
 }
 
 func (self *Shell) Merge(name string) *Shell {
-	return self.RunCommand([]string{"git", "merge", "--commit", "--no-ff", name})
+	return self.RunCommand([]string{"git.exe", "merge", "--commit", "--no-ff", name})
 }
 
 func (self *Shell) ContinueMerge() *Shell {
-	return self.RunCommand([]string{"git", "-c", "core.editor=true", "merge", "--continue"})
+	return self.RunCommand([]string{"git.exe", "-c", "core.editor=true", "merge", "--continue"})
 }
 
 func (self *Shell) GitAdd(path string) *Shell {
-	return self.RunCommand([]string{"git", "add", path})
+	return self.RunCommand([]string{"git.exe", "add", path})
 }
 
 func (self *Shell) GitAddAll() *Shell {
-	return self.RunCommand([]string{"git", "add", "-A"})
+	return self.RunCommand([]string{"git.exe", "add", "-A"})
 }
 
 func (self *Shell) Commit(message string) *Shell {
-	return self.RunCommand([]string{"git", "commit", "-m", message})
+	return self.RunCommand([]string{"git.exe", "commit", "-m", message})
 }
 
 func (self *Shell) CommitInWorktreeOrSubmodule(worktreePath string, message string) *Shell {
-	return self.RunCommand([]string{"git", "-C", worktreePath, "commit", "-m", message})
+	return self.RunCommand([]string{"git.exe", "-C", worktreePath, "commit", "-m", message})
 }
 
 func (self *Shell) EmptyCommit(message string) *Shell {
-	return self.RunCommand([]string{"git", "commit", "--allow-empty", "-m", message})
+	return self.RunCommand([]string{"git.exe", "commit", "--allow-empty", "-m", message})
 }
 
 func (self *Shell) EmptyCommitWithBody(subject string, body string) *Shell {
-	return self.RunCommand([]string{"git", "commit", "--allow-empty", "-m", subject, "-m", body})
+	return self.RunCommand([]string{"git.exe", "commit", "--allow-empty", "-m", subject, "-m", body})
 }
 
 func (self *Shell) EmptyCommitDaysAgo(message string, daysAgo int) *Shell {
-	return self.RunCommand([]string{"git", "commit", "--allow-empty", "--date", fmt.Sprintf("%d days ago", daysAgo), "-m", message})
+	return self.RunCommand([]string{"git.exe", "commit", "--allow-empty", "--date", fmt.Sprintf("%d days ago", daysAgo), "-m", message})
 }
 
 func (self *Shell) EmptyCommitWithDate(message string, date string) *Shell {
@@ -191,31 +191,31 @@ func (self *Shell) EmptyCommitWithDate(message string, date string) *Shell {
 		"GIT_AUTHOR_DATE=" + date,
 		"GIT_COMMITTER_DATE=" + date,
 	}
-	return self.RunCommandWithEnv([]string{"git", "commit", "--allow-empty", "-m", message}, env)
+	return self.RunCommandWithEnv([]string{"git.exe", "commit", "--allow-empty", "-m", message}, env)
 }
 
 func (self *Shell) Revert(ref string) *Shell {
-	return self.RunCommand([]string{"git", "revert", ref})
+	return self.RunCommand([]string{"git.exe", "revert", ref})
 }
 
 func (self *Shell) AssertRemoteTagNotFound(upstream, name string) *Shell {
-	return self.RunCommandExpectError([]string{"git", "ls-remote", "--exit-code", upstream, fmt.Sprintf("refs/tags/%s", name)})
+	return self.RunCommandExpectError([]string{"git.exe", "ls-remote", "--exit-code", upstream, fmt.Sprintf("refs/tags/%s", name)})
 }
 
 func (self *Shell) CreateLightweightTag(name string, ref string) *Shell {
-	return self.RunCommand([]string{"git", "tag", name, ref})
+	return self.RunCommand([]string{"git.exe", "tag", name, ref})
 }
 
 func (self *Shell) CreateAnnotatedTag(name string, message string, ref string) *Shell {
-	return self.RunCommand([]string{"git", "tag", "-a", name, "-m", message, ref})
+	return self.RunCommand([]string{"git.exe", "tag", "-a", name, "-m", message, ref})
 }
 
 func (self *Shell) PushBranch(upstream, branch string) *Shell {
-	return self.RunCommand([]string{"git", "push", upstream, branch})
+	return self.RunCommand([]string{"git.exe", "push", upstream, branch})
 }
 
 func (self *Shell) PushBranchAndSetUpstream(upstream, branch string) *Shell {
-	return self.RunCommand([]string{"git", "push", "--set-upstream", upstream, branch})
+	return self.RunCommand([]string{"git.exe", "push", "--set-upstream", upstream, branch})
 }
 
 // convenience method for creating a file and adding it
@@ -240,7 +240,7 @@ func (self *Shell) DeleteFileAndAdd(fileName string) *Shell {
 }
 
 func (self *Shell) RenameFileInGit(oldName string, newName string) *Shell {
-	return self.RunCommand([]string{"git", "mv", oldName, newName})
+	return self.RunCommand([]string{"git.exe", "mv", oldName, newName})
 }
 
 // creates commits 01, 02, 03, ..., n with a new file in each
@@ -335,7 +335,7 @@ func (self *Shell) CreateRepoHistory() *Shell {
 		os.Setenv("GIT_AUTHOR_DATE", commitDate.Format(time.RFC3339))
 
 		// Merge branch into master
-		self.RunCommand([]string{"git", "merge", "--no-ff", branchName, "-m", fmt.Sprintf("Merge %s into master", branchName)})
+		self.RunCommand([]string{"git.exe", "merge", "--no-ff", branchName, "-m", fmt.Sprintf("Merge %s into master", branchName)})
 
 		os.Setenv("GIT_COMMITTER_DATE", prevCommitterDate)
 		os.Setenv("GIT_AUTHOR_DATE", prevAuthorDate)
@@ -355,78 +355,78 @@ func (self *Shell) RandomChangeCommit(message string) *Shell {
 }
 
 func (self *Shell) SetConfig(key string, value string) *Shell {
-	self.RunCommand([]string{"git", "config", "--local", key, value})
+	self.RunCommand([]string{"git.exe", "config", "--local", key, value})
 	return self
 }
 
 func (self *Shell) CloneIntoRemote(name string) *Shell {
 	self.Clone(name)
-	self.RunCommand([]string{"git", "remote", "add", name, "../" + name})
-	self.RunCommand([]string{"git", "fetch", name})
+	self.RunCommand([]string{"git.exe", "remote", "add", name, "../" + name})
+	self.RunCommand([]string{"git.exe", "fetch", name})
 
 	return self
 }
 
 func (self *Shell) CloneIntoSubmodule(submoduleName string, submodulePath string) *Shell {
 	self.Clone(submoduleName)
-	self.RunCommand([]string{"git", "submodule", "add", "--name", submoduleName, "../" + submoduleName, submodulePath})
+	self.RunCommand([]string{"git.exe", "submodule", "add", "--name", submoduleName, "../" + submoduleName, submodulePath})
 
 	return self
 }
 
 func (self *Shell) Clone(repoName string) *Shell {
-	self.RunCommand([]string{"git", "clone", "--bare", ".", "../" + repoName})
+	self.RunCommand([]string{"git.exe", "clone", "--bare", ".", "../" + repoName})
 
 	return self
 }
 
 func (self *Shell) CloneNonBare(repoName string) *Shell {
-	self.RunCommand([]string{"git", "clone", ".", "../" + repoName})
+	self.RunCommand([]string{"git.exe", "clone", ".", "../" + repoName})
 
 	return self
 }
 
 func (self *Shell) SetBranchUpstream(branch string, upstream string) *Shell {
-	self.RunCommand([]string{"git", "branch", "--set-upstream-to=" + upstream, branch})
+	self.RunCommand([]string{"git.exe", "branch", "--set-upstream-to=" + upstream, branch})
 
 	return self
 }
 
 func (self *Shell) RemoveBranch(branch string) *Shell {
-	self.RunCommand([]string{"git", "branch", "-d", branch})
+	self.RunCommand([]string{"git.exe", "branch", "-d", branch})
 
 	return self
 }
 
 func (self *Shell) RemoveRemoteBranch(remoteName string, branch string) *Shell {
-	self.RunCommand([]string{"git", "-C", "../" + remoteName, "branch", "-d", branch})
+	self.RunCommand([]string{"git.exe", "-C", "../" + remoteName, "branch", "-d", branch})
 
 	return self
 }
 
 func (self *Shell) HardReset(ref string) *Shell {
-	self.RunCommand([]string{"git", "reset", "--hard", ref})
+	self.RunCommand([]string{"git.exe", "reset", "--hard", ref})
 	return self
 }
 
 func (self *Shell) Stash(message string) *Shell {
-	self.RunCommand([]string{"git", "stash", "push", "-m", message})
+	self.RunCommand([]string{"git.exe", "stash", "push", "-m", message})
 	return self
 }
 
 func (self *Shell) StartBisect(good string, bad string) *Shell {
-	self.RunCommand([]string{"git", "bisect", "start", good, bad})
+	self.RunCommand([]string{"git.exe", "bisect", "start", good, bad})
 	return self
 }
 
 func (self *Shell) Init() *Shell {
-	self.RunCommand([]string{"git", "-c", "init.defaultBranch=master", "init"})
+	self.RunCommand([]string{"git.exe", "-c", "init.defaultBranch=master", "init"})
 	return self
 }
 
 func (self *Shell) AddWorktree(base string, path string, newBranchName string) *Shell {
 	return self.RunCommand([]string{
-		"git", "worktree", "add", "-b",
+		"git.exe", "worktree", "add", "-b",
 		newBranchName, path, base,
 	})
 }
@@ -434,7 +434,7 @@ func (self *Shell) AddWorktree(base string, path string, newBranchName string) *
 // add worktree and have it checkout the base branch
 func (self *Shell) AddWorktreeCheckout(base string, path string) *Shell {
 	return self.RunCommand([]string{
-		"git", "worktree", "add", path, base,
+		"git.exe", "worktree", "add", path, base,
 	})
 }
 
@@ -442,7 +442,7 @@ func (self *Shell) AddFileInWorktreeOrSubmodule(worktreePath string, filePath st
 	self.CreateFile(filepath.Join(worktreePath, filePath), content)
 
 	self.RunCommand([]string{
-		"git", "-C", worktreePath, "add", filePath,
+		"git.exe", "-C", worktreePath, "add", filePath,
 	})
 
 	return self
@@ -452,7 +452,7 @@ func (self *Shell) UpdateFileInWorktreeOrSubmodule(worktreePath string, filePath
 	self.UpdateFile(filepath.Join(worktreePath, filePath), content)
 
 	self.RunCommand([]string{
-		"git", "-C", worktreePath, "add", filePath,
+		"git.exe", "-C", worktreePath, "add", filePath,
 	})
 
 	return self
@@ -518,8 +518,8 @@ func (self *Shell) Chdir(path string) *Shell {
 }
 
 func (self *Shell) SetAuthor(authorName string, authorEmail string) *Shell {
-	self.RunCommand([]string{"git", "config", "--local", "user.name", authorName})
-	self.RunCommand([]string{"git", "config", "--local", "user.email", authorEmail})
+	self.RunCommand([]string{"git.exe", "config", "--local", "user.name", authorName})
+	self.RunCommand([]string{"git.exe", "config", "--local", "user.email", authorEmail})
 
 	return self
 }

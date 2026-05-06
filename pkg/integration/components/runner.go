@@ -176,7 +176,7 @@ func globalGitConfigPath(rootDir string) string {
 
 func getGitVersion() (*git_commands.GitVersion, error) {
 	osCommand := oscommands.NewDummyOSCommand()
-	cmdObj := osCommand.Cmd.New([]string{"git", "--version"})
+	cmdObj := osCommand.Cmd.New([]string{"git.exe", "--version"})
 	versionStr, err := cmdObj.RunWithOutput()
 	if err != nil {
 		return nil, err

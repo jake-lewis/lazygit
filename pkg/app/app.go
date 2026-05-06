@@ -227,7 +227,7 @@ func (app *App) setupRepo(
 		}
 
 		if shouldInitRepo {
-			args := []string{"git", "init"}
+			args := []string{"git.exe", "init"}
 			if initialBranchArg != "" {
 				args = append(args, initialBranchArg)
 			}

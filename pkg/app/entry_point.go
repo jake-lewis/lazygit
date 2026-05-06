@@ -311,7 +311,7 @@ func mergeBuildInfo(buildInfo *BuildInfo) {
 }
 
 func getGitVersionInfo() string {
-	cmd := exec.Command("git", "--version")
+	cmd := exec.Command("git.exe", "--version")
 	stdout, _ := cmd.Output()
 	gitVersion := strings.Trim(strings.TrimPrefix(string(stdout), "git version "), " \r\n")
 	return gitVersion

@@ -55,10 +55,10 @@ func runGitConfigCmd(cmd *exec.Cmd) (string, error) {
 
 func getGitConfigCmd(key string) *exec.Cmd {
 	gitArgs := []string{"config", "--get", "--null", key}
-	return exec.Command("git", gitArgs...)
+	return exec.Command("git.exe", gitArgs...)
 }
 
 func getGitConfigGeneralCmd(args string) *exec.Cmd {
 	gitArgs := append([]string{"config"}, strings.Split(args, " ")...)
-	return exec.Command("git", gitArgs...)
+	return exec.Command("git.exe", gitArgs...)
 }

@@ -92,7 +92,7 @@ func getDaemonKind() DaemonKind {
 }
 
 func getCommentChar() byte {
-	cmd := exec.Command("git", "config", "--get", "--null", "core.commentChar")
+	cmd := exec.Command("git.exe", "config", "--get", "--null", "core.commentChar")
 	if output, err := cmd.Output(); err == nil && len(output) == 2 {
 		return output[0]
 	}

@@ -73,7 +73,7 @@ func (self *CmdObj) ToString() string {
 	return strings.Join(quotedArgs, " ")
 }
 
-// outputs args vector e.g. ["git", "commit", "-m", "my message"]
+// outputs args vector e.g. ["git.exe", "commit", "-m", "my message"]
 func (self *CmdObj) Args() []string {
 	return self.cmd.Args
 }
