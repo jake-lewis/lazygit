@@ -2,6 +2,8 @@ package git_commands
 
 import (
 	iofs "io/fs"
+	"os/exec"
+	"log"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -54,6 +56,16 @@ func (self *WorktreeLoader) GetWorktrees() ([]*models.Worktree, error) {
 
 		if strings.HasPrefix(splitLine, "worktree ") {
 			path := strings.SplitN(splitLine, " ", 2)[1]
+
+			// convert path from win to wsl
+			// from win path to wsl
+			pathCmd := exec.Command("wslpath", "-u", path)
+			wslPathBytes, pathErr := pathCmd.Output()
+			if pathErr != nil {
+				log.Fatal("Path conversion went bang")
+			}
+			path = string(wslPathBytes[:len(wslPathBytes)-1])
+
 			isMain := path == currentRepoPath
 			isCurrent := path == worktreePath
 			isPathMissing := self.pathExists(path)
