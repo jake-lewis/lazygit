@@ -72,7 +72,7 @@ func (self *GitCommandBuilder) DirIf(condition bool, path string) *GitCommandBui
 // Note, you may prefer to use the Dir method instead of this one
 func (self *GitCommandBuilder) Worktree(path string) *GitCommandBuilder {
 	// worktree arg comes before the command
-	self.args = append([]string{"--work-tree", path}, self.args...)
+	self.args = append([]string{"--work-tree", oscommands.WslPathToWin(path)}, self.args...)
 
 	return self
 }
@@ -88,7 +88,7 @@ func (self *GitCommandBuilder) WorktreePathIf(condition bool, path string) *GitC
 // Note, you may prefer to use the Dir method instead of this one
 func (self *GitCommandBuilder) GitDir(path string) *GitCommandBuilder {
 	// git dir arg comes before the command
-	self.args = append([]string{"--git-dir", path}, self.args...)
+	self.args = append([]string{"--git-dir", oscommands.WslPathToWin(path)}, self.args...)
 
 	return self
 }
@@ -127,7 +127,7 @@ func runGitCmdOnPaths(subcommand string, paths []string, cmd oscommands.ICmdObjB
 			end++
 		}
 		if err := cmd.New(NewGitCmd(subcommand).Arg("--").
-			Arg(paths[start:end]...).
+			Arg(oscommands.WslPathArrayToWin(paths[start:end])...).
 			ToArgv()).Run(); err != nil {
 			return err
 		}

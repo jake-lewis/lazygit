@@ -46,7 +46,7 @@ func (self *WorkingTreeCommands) StageFiles(paths []string, extraArgs []string) 
 	cmdArgs := NewGitCmd("add").
 		Arg(extraArgs...).
 		Arg("--").
-		Arg(paths...).
+		Arg(oscommands.WinPathArrayToWsl(paths)...).
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
@@ -77,11 +77,11 @@ func (self *WorkingTreeCommands) UnStageFile(paths []string, tracked bool) error
 }
 
 func (self *WorkingTreeCommands) UnstageTrackedFiles(paths []string) error {
-	return self.cmd.New(NewGitCmd("reset").Arg("HEAD", "--").Arg(paths...).ToArgv()).Run()
+	return self.cmd.New(NewGitCmd("reset").Arg("HEAD", "--").Arg(oscommands.WinPathArrayToWsl(paths)...).ToArgv()).Run()
 }
 
 func (self *WorkingTreeCommands) UnstageUntrackedFiles(paths []string) error {
-	return self.cmd.New(NewGitCmd("rm").Arg("--cached", "--force", "--").Arg(paths...).ToArgv()).Run()
+	return self.cmd.New(NewGitCmd("rm").Arg("--cached", "--force", "--").Arg(oscommands.WinPathArrayToWsl(paths)...).ToArgv()).Run()
 }
 
 func (self *WorkingTreeCommands) BeforeAndAfterFileForRename(file *models.File) (*models.File, *models.File, error) {
@@ -138,15 +138,17 @@ func (self *WorkingTreeCommands) DiscardAllFileChanges(file *models.File) error 
 		return nil
 	}
 
+	winPath := oscommands.WslPathToWin(file.Path)
+
 	if file.ShortStatus == "AA" {
 		if err := self.cmd.New(
-			NewGitCmd("checkout").Arg("--ours", "--", file.Path).ToArgv(),
+			NewGitCmd("checkout").Arg("--ours", "--", winPath).ToArgv(),
 		).Run(); err != nil {
 			return err
 		}
 
 		if err := self.cmd.New(
-			NewGitCmd("add").Arg("--", file.Path).ToArgv(),
+			NewGitCmd("add").Arg("--", winPath).ToArgv(),
 		).Run(); err != nil {
 			return err
 		}
@@ -155,14 +157,14 @@ func (self *WorkingTreeCommands) DiscardAllFileChanges(file *models.File) error 
 
 	if file.ShortStatus == "DU" {
 		return self.cmd.New(
-			NewGitCmd("rm").Arg("--", file.Path).ToArgv(),
+			NewGitCmd("rm").Arg("--", winPath).ToArgv(),
 		).Run()
 	}
 
 	// if the file isn't tracked, we assume you want to delete it
 	if file.HasStagedChanges || file.HasMergeConflicts {
 		if err := self.cmd.New(
-			NewGitCmd("reset").Arg("--", file.Path).ToArgv(),
+			NewGitCmd("reset").Arg("--", winPath).ToArgv(),
 		).Run(); err != nil {
 			return err
 		}
@@ -357,7 +359,7 @@ func (self *WorkingTreeCommands) RemoveUntrackedDirFiles(node IFileNode) error {
 }
 
 func (self *WorkingTreeCommands) DiscardUnstagedFileChanges(file *models.File) error {
-	cmdArgs := NewGitCmd("checkout").Arg("--", file.Path).ToArgv()
+	cmdArgs := NewGitCmd("checkout").Arg("--", oscommands.WslPathToWin(file.Path)).ToArgv()
 	return self.cmd.New(cmdArgs).Run()
 }
 
@@ -399,7 +401,7 @@ func (self *WorkingTreeCommands) WorktreeFileDiffCmdObj(node models.IFile, plain
 	}
 
 	contextSize := self.UserConfig().Git.DiffContextSize
-	prevPath := node.GetPreviousPath()
+	prevPath := oscommands.WslPathToWin(node.GetPreviousPath())
 	noIndex := !node.GetIsTracked() && !node.GetHasStagedChanges() && !cached && node.GetIsFile()
 	extDiffCmd := self.pagerConfig.GetExternalDiffCommand()
 	useExtDiff := extDiffCmd != "" && !plain
@@ -422,7 +424,7 @@ func (self *WorkingTreeCommands) WorktreeFileDiffCmdObj(node models.IFile, plain
 		ArgIf(noIndex, "--no-index").
 		Arg("--").
 		ArgIf(noIndex, "/dev/null").
-		Arg(paths...).
+		Arg(oscommands.WslPathArrayToWin(paths)...).
 		ArgIf(prevPath != "", prevPath).
 		Dir(self.repoPaths.worktreePath).
 		ToArgv()
@@ -461,7 +463,7 @@ func (self *WorkingTreeCommands) ShowFileDiffCmdObj(from string, to string, reve
 		ArgIf(reverse, "-R").
 		ArgIf(!plain && self.UserConfig().Git.IgnoreWhitespaceInDiffView, "--ignore-all-space").
 		Arg("--").
-		Arg(fileNames...).
+		Arg(oscommands.WslPathArrayToWin(fileNames)...).
 		Dir(self.repoPaths.worktreePath).
 		ToArgv()
 
@@ -470,7 +472,7 @@ func (self *WorkingTreeCommands) ShowFileDiffCmdObj(from string, to string, reve
 
 // CheckoutFile checks out the file for the given commit
 func (self *WorkingTreeCommands) CheckoutFile(commitHash, fileName string) error {
-	cmdArgs := NewGitCmd("checkout").Arg(commitHash, "--", fileName).
+	cmdArgs := NewGitCmd("checkout").Arg(commitHash, "--", oscommands.WslPathToWin(fileName)).
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
@@ -486,14 +488,14 @@ func (self *WorkingTreeCommands) DiscardAnyUnstagedFileChanges() error {
 
 // RemoveTrackedFiles will delete the given file(s) even if they are currently tracked
 func (self *WorkingTreeCommands) RemoveTrackedFiles(name string) error {
-	cmdArgs := NewGitCmd("rm").Arg("-r", "--cached", "--", name).
+	cmdArgs := NewGitCmd("rm").Arg("-r", "--cached", "--", oscommands.WslPathToWin((name))).
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
 }
 
 func (self *WorkingTreeCommands) RemoveConflictedFile(name string) error {
-	cmdArgs := NewGitCmd("rm").Arg("--", name).
+	cmdArgs := NewGitCmd("rm").Arg("--", oscommands.WslPathToWin((name))).
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
@@ -551,7 +553,7 @@ func (self *WorkingTreeCommands) ResetMixed(ref string) error {
 
 func (self *WorkingTreeCommands) ShowFileAtStage(path string, stage int) (string, error) {
 	cmdArgs := NewGitCmd("show").
-		Arg(fmt.Sprintf(":%d:%s", stage, path)).
+		Arg(fmt.Sprintf(":%d:%s", stage, oscommands.WslPathToWin(path))).
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).RunWithOutput()
@@ -559,7 +561,7 @@ func (self *WorkingTreeCommands) ShowFileAtStage(path string, stage int) (string
 
 func (self *WorkingTreeCommands) ObjectIDAtStage(path string, stage int) (string, error) {
 	cmdArgs := NewGitCmd("rev-parse").
-		Arg(fmt.Sprintf(":%d:%s", stage, path)).
+		Arg(fmt.Sprintf(":%d:%s", stage, oscommands.WslPathToWin(path))).
 		ToArgv()
 
 	output, err := self.cmd.New(cmdArgs).RunWithOutput()
@@ -574,7 +576,7 @@ func (self *WorkingTreeCommands) MergeFileForFiles(strategy string, oursFilepath
 	cmdArgs := NewGitCmd("merge-file").
 		Arg(strategy).
 		Arg("--stdout").
-		Arg(oursFilepath, baseFilepath, theirsFilepath).
+		Arg(oscommands.WslPathToWin(oursFilepath), oscommands.WslPathToWin(baseFilepath), oscommands.WslPathToWin(theirsFilepath)).
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).RunWithOutput()

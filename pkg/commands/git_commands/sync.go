@@ -101,8 +101,8 @@ func (self *SyncCommands) Pull(task gocui.Task, opts PullOptions) error {
 		ArgIf(opts.FastForwardOnly, "--ff-only").
 		ArgIf(opts.RemoteName != "", opts.RemoteName).
 		ArgIf(opts.BranchName != "", "refs/heads/"+opts.BranchName).
-		GitDirIf(opts.WorktreeGitDir != "", oscommands.WslPathToWin(opts.WorktreeGitDir)).
-		WorktreePathIf(opts.WorktreePath != "", oscommands.WslPathToWin(opts.WorktreePath)).
+		GitDirIf(opts.WorktreeGitDir != "", opts.WorktreeGitDir).
+		WorktreePathIf(opts.WorktreePath != "", opts.WorktreePath).
 		ToArgv()
 
 	// setting GIT_SEQUENCE_EDITOR to ':' as a way of skipping it, in case the user

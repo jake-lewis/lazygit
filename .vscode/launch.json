@@ -9,7 +9,8 @@
       "program": "main.go",
       "args": [
         "--debug",
-        "--use-config-file=${workspaceFolder}/.vscode/debugger_config.yml"
+        "--use-config-file=${workspaceFolder}/.vscode/debugger_config.yml",
+        "-p=../git-test-area-2"
       ],
       "hideSystemGoroutines": true,
       "console": "integratedTerminal",
