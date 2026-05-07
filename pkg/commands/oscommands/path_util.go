@@ -3,11 +3,26 @@ package oscommands
 import (
 	"log"
 	"os/exec"
-	"slices"
+	"path/filepath"
+	"strings"
 )
 
+func IsWinPath(path string) bool {
+	// Windows drive letter (C:\ or C:/)
+	if len(path) >= 2 && path[1] == ':' {
+		return true
+	}
+
+	// Windows UNC paths (\\server\share)
+	if strings.HasPrefix(path, `\\`) {
+		return true
+	}
+
+	return false
+}
+
 func WslPathToWin(path string) string {
-	if path == "" {
+	if path == "" || !filepath.IsAbs(path) {
 		return path
 	}
 	pathCmd := exec.Command("wslpath", "-m", path)
@@ -19,16 +34,15 @@ func WslPathToWin(path string) string {
 }
 
 func WslPathArrayToWin(paths []string) []string {
-	res := make([]string, 0, len(paths))
-	for index, path := range paths {
-		// slices.Insert(res, index, (WslPathToWin(path)))
-		res[index] = WslPathToWin(path)
+	res := []string{}
+	for _, path := range paths {
+		res = append(res, WslPathToWin(path))
 	}
 	return res
 }
 
 func WinPathToWsl(path string) string {
-	if path == "" {
+	if path == "" || !IsWinPath(path) {
 		return path
 	}
 	pathCmd := exec.Command("wslpath", "-u", path)
@@ -40,9 +54,9 @@ func WinPathToWsl(path string) string {
 }
 
 func WinPathArrayToWsl(paths []string) []string {
-	res := make([]string, 0, len(paths))
-	for index, path := range paths {
-		slices.Insert(res, index, (WinPathToWsl(path)))
+	res := []string{}
+	for _, path := range paths {
+		res = append(res, WinPathToWsl(path))
 	}
 	return res
 }
