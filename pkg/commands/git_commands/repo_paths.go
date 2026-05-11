@@ -133,7 +133,7 @@ func callGitRevParseWithDir(
 	dir string,
 	gitRevArgs ...string,
 ) (string, error) {
-	gitRevParse := NewGitCmd("rev-parse").Arg("--path-format=absolute").Arg(gitRevArgs...)
+	gitRevParse := NewGitCmd("rev-parse").Arg("--path-format=absolute").Arg(gitRevArgs...) // check file
 	if dir != "" {
 		gitRevParse.Dir(dir)
 	}

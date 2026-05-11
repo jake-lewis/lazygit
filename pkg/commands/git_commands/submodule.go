@@ -157,7 +157,7 @@ func (self *SubmoduleCommands) Delete(submodule *models.SubmoduleConfig) error {
 
 		if err := self.cmd.New(
 			NewGitCmd("config").
-				Arg("--remove-section", "submodule."+submodule.Path).
+				Arg("--remove-section", "submodule."+submodule.Path). // issue with regex, check paths
 				ToArgv(),
 		).Run(); err != nil {
 			return err

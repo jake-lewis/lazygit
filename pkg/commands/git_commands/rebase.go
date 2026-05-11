@@ -526,6 +526,7 @@ func (self *RebaseCommands) DiscardOldFileChanges(commits []*models.Commit, comm
 		doesFileExistInPreviousCommit := false
 		if commitIndex < len(commits)-1 {
 			// check if file exists in previous commit (this command returns an empty string if the file doesn't exist)
+			// todo check filepath here
 			cmdArgs := NewGitCmd("ls-tree").Arg("--name-only", "HEAD^", "--", filePath).ToArgv()
 			output, err := self.cmd.New(cmdArgs).DontLog().RunWithOutput()
 			if err != nil {
