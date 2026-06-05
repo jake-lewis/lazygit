@@ -35,7 +35,7 @@ func (self *DiffCommands) DiffCmdObj(diffArgs []string) *oscommands.CmdObj {
 			Arg(fmt.Sprintf("--unified=%d", self.UserConfig().Git.DiffContextSize)).
 			Arg(diffArgs...).
 			Dir(self.repoPaths.worktreePath).
-			ToArgv(),
+			ToArgvLinux(),
 	)
 }
 

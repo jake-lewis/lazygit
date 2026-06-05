@@ -401,7 +401,7 @@ func (self *WorkingTreeCommands) WorktreeFileDiffCmdObj(node models.IFile, plain
 	}
 
 	contextSize := self.UserConfig().Git.DiffContextSize
-	prevPath := oscommands.WslPathToWin(node.GetPreviousPath())
+	prevPath := node.GetPreviousPath()
 	noIndex := !node.GetIsTracked() && !node.GetHasStagedChanges() && !cached && node.GetIsFile()
 	extDiffCmd := self.pagerConfig.GetExternalDiffCommand()
 	useExtDiff := extDiffCmd != "" && !plain
@@ -424,10 +424,10 @@ func (self *WorkingTreeCommands) WorktreeFileDiffCmdObj(node models.IFile, plain
 		ArgIf(noIndex, "--no-index").
 		Arg("--").
 		ArgIf(noIndex, "/dev/null").
-		Arg(oscommands.WslPathArrayToWin(paths)...).
+		Arg(paths...).
 		ArgIf(prevPath != "", prevPath).
 		Dir(self.repoPaths.worktreePath).
-		ToArgv()
+		ToArgvLinux()
 
 	return self.cmd.New(cmdArgs).DontLog()
 }
@@ -463,9 +463,9 @@ func (self *WorkingTreeCommands) ShowFileDiffCmdObj(from string, to string, reve
 		ArgIf(reverse, "-R").
 		ArgIf(!plain && self.UserConfig().Git.IgnoreWhitespaceInDiffView, "--ignore-all-space").
 		Arg("--").
-		Arg(oscommands.WslPathArrayToWin(fileNames)...).
+		Arg(fileNames...).
 		Dir(self.repoPaths.worktreePath).
-		ToArgv()
+		ToArgvLinux()
 
 	return self.cmd.New(cmdArgs).DontLog()
 }

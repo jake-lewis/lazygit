@@ -11,6 +11,8 @@ import (
 type GitCommandBuilder struct {
 	// command string
 	args []string
+	// the WSL path passed to Dir(), retained so ToArgvLinux() can use it directly
+	dirWsl string
 }
 
 func NewGitCmd(command string) *GitCommandBuilder {
@@ -55,6 +57,7 @@ func (self *GitCommandBuilder) ConfigIf(condition bool, ifTrue string) *GitComma
 
 // the -C arg will make git do a `cd` to the directory before doing anything else
 func (self *GitCommandBuilder) Dir(path string) *GitCommandBuilder {
+	self.dirWsl = path
 	// repo path comes before the command
 	self.args = append([]string{"-C", oscommands.WslPathToWin(path)}, self.args...)
 
@@ -103,6 +106,23 @@ func (self *GitCommandBuilder) GitDirIf(condition bool, path string) *GitCommand
 
 func (self *GitCommandBuilder) ToArgv() []string {
 	return append([]string{"git.exe"}, self.args...)
+}
+
+// ToArgvLinux builds the argv using the Linux git binary and the original WSL
+// path for the -C argument (not the Windows-converted one). This is used for
+// display commands (show, diff) that are run as direct Linux child processes,
+// where SIGTERM will cleanly terminate them and close the stdout pipe.
+func (self *GitCommandBuilder) ToArgvLinux() []string {
+	args := self.args
+	if self.dirWsl != "" {
+		// args[0:2] is ["-C", "<winPath>"] injected by Dir(); replace the win
+		// path with the original WSL path for the Linux git binary.
+		newArgs := make([]string, len(args))
+		copy(newArgs, args)
+		newArgs[1] = self.dirWsl
+		args = newArgs
+	}
+	return append([]string{"git"}, args...)
 }
 
 func (self *GitCommandBuilder) ToString() string {

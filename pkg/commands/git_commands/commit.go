@@ -261,7 +261,7 @@ func (self *CommitCommands) ShowCmdObj(hash string, filterPaths []string) *oscom
 		Arg("--").
 		Arg(filterPaths...).
 		Dir(self.repoPaths.worktreePath).
-		ToArgv()
+		ToArgvLinux()
 
 	return self.cmd.New(cmdArgs).DontLog()
 }
