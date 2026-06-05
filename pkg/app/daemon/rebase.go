@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/common"
 	"github.com/jesseduffield/lazygit/pkg/env"
 	"github.com/jesseduffield/lazygit/pkg/utils"
@@ -20,7 +21,7 @@ type ChangeTodoAction struct {
 func handleInteractiveRebase(common *common.Common, f func(path string) error) error {
 	common.Log.Info("Lazygit invoked as interactive rebase demon")
 	common.Log.Info("args: ", os.Args)
-	path := os.Args[1]
+	path := oscommands.WinPathToWsl(os.Args[1])
 
 	if strings.HasSuffix(path, "git-rebase-todo") {
 		err := utils.RemoveUpdateRefsForCopiedBranch(path, getCommentChar())

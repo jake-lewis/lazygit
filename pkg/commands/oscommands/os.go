@@ -359,5 +359,5 @@ func GetLazygitPath() string {
 	if err != nil {
 		ex = os.Args[0] // fallback to the first call argument if needed
 	}
-	return `"` + filepath.ToSlash(ex) + `"`
+	return `"` + WslPathToWin(ex) + `"`
 }

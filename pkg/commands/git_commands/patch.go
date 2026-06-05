@@ -8,6 +8,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jesseduffield/lazygit/pkg/app/daemon"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/commands/patch"
 	"github.com/stefanhaller/git-todo-parser/todo"
 )
@@ -72,7 +73,7 @@ func (self *PatchCommands) applyPatchFile(filepath string, opts ApplyPatchOpts) 
 		ArgIf(opts.Cached, "--cached").
 		ArgIf(opts.Index, "--index").
 		ArgIf(opts.Reverse, "--reverse").
-		Arg(filepath).
+		Arg(oscommands.WslPathToWin(filepath)).
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
