@@ -55,7 +55,7 @@ func (self *WorktreeLoader) GetWorktrees() ([]*models.Worktree, error) {
 
 		if strings.HasPrefix(splitLine, "worktree ") {
 			path := strings.SplitN(splitLine, " ", 2)[1]
-			path = oscommands.WinPathToWsl(worktreePath)
+			path = oscommands.WinPathToWsl(path)
 
 			isMain := path == currentRepoPath
 			isCurrent := path == worktreePath
